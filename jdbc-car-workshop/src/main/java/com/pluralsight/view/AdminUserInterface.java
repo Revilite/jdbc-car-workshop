@@ -1,17 +1,19 @@
 package com.pluralsight.view;
 
 
+import com.pluralsight.model.contract.Contract;
+import com.pluralsight.model.contract.LeaseContract;
+import com.pluralsight.model.contract.SalesContract;
+
 import java.util.List;
 import java.util.Scanner;
 
 public class AdminUserInterface {
     //Tried to set .env file but can figure out how to import right class
-    private ContractDataManager cdm = new ContractDataManager();
 
     public void logIn(String password) {
         //Set your password in configurations when running the file
         if (password.equalsIgnoreCase(System.getenv("PASSWORD"))) {
-            cdm.initContracts();
             displayContracts();
         } else {
             System.out.println("Incorrect Password");
@@ -32,10 +34,8 @@ public class AdminUserInterface {
 
         switch (userInput) {
             case ("1"):
-                processDisplayAllContracts();
                 break;
             case ("2"):
-                processDisplayTenContracts();
                 break;
             default:
                 System.out.println("Incorrect answer");
@@ -103,12 +103,5 @@ public class AdminUserInterface {
         return sb.toString();
     }
 
-    public void processDisplayAllContracts() {
-        System.out.print(displayContractList(cdm.getAllContracts()));
-    }
-
-    public void processDisplayTenContracts() {
-        System.out.print(displayContractList(cdm.getLastTenContracts()));
-    }
 
 }

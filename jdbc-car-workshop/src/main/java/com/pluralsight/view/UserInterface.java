@@ -1,24 +1,25 @@
 package com.pluralsight.view;
 
+import com.pluralsight.dao.VehicleDAOMysqlImpl;
+import com.pluralsight.model.vehicle.Dealership;
+import com.pluralsight.model.vehicle.Vehicle;
+import com.pluralsight.model.vehicle.VehicleforDummies;
 import com.pluralsight.view.JavaHelpers.ColorCodes;
 import com.pluralsight.model.contract.*;
+import org.apache.commons.dbcp2.BasicDataSource;
 
+import javax.sql.DataSource;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Scanner;
 
 public class UserInterface {
     private Dealership dealership;
+    private DataSource dataSource;
 
-    //takes inventory.csv information and brings it into memory.
-    private void init() {
-        DealershipFileManager dfm = new DealershipFileManager();
-        this.dealership = dfm.getDealership();
-    }
-
-    public void display() {
+    public void display(DataSource dataSource) {
+        this.dataSource = dataSource;
         Scanner scan = new Scanner(System.in);
-        init();
         String userChoice = "";
         System.out.printf("""
                        %s╔════════════════════════════╗
@@ -79,7 +80,7 @@ public class UserInterface {
                     processSellLeaseVehicle();
                     break;
                 case ("11"):
-                    processAdminUI();
+//                    processAdminUI();
                     break;
                 case ("99"):
                     break;
@@ -234,7 +235,8 @@ public class UserInterface {
     }
 
     public void processGetAllRequest() {
-        System.out.println(displayVehicles(dealership.getAllVehicles()));
+        VehicleDAOMysqlImpl request = new VehicleDAOMysqlImpl(dataSource);
+        System.out.println(displayVehicles(request.findAllVehicles()));
     }
 
     public String prompt(String prompt) {
@@ -283,7 +285,7 @@ public class UserInterface {
     }
 
     public void processAddVehicleRequest() {
-        DealershipFileManager dfm = new DealershipFileManager();
+
         int vin = convertToInt(prompt("vin number"));
         if (vin == -1) {
             return;
@@ -318,20 +320,18 @@ public class UserInterface {
         }
 
         dealership.addVehicle(new VehicleforDummies(vin, year, make, model, type, color, mileage, price));
-        dfm.saveDealership(dealership);
         System.out.println(ColorCodes.GREEN + "Car added!" + ColorCodes.RESET);
 
     }
 
     public void processRemoveVehicleRequest() {
-        DealershipFileManager dfm = new DealershipFileManager();
+
         int vin = convertToInt(prompt("vin number"));
         if (vin == -1) {
             return;
         }
 
         dealership.removeVehicle(dealership.getVehiclesByVin(vin).get(0));
-        dfm.saveDealership(dealership);
         System.out.println(ColorCodes.RED + "Car removed" + ColorCodes.RESET);
     }
 
@@ -403,9 +403,6 @@ public class UserInterface {
             }
         }
         dealership.removeVehicle((VehicleforDummies) soldVehicle);
-        new ContractDataManager().saveContract(contract);
-
-
     }
 
     public void processAdminUI() {
