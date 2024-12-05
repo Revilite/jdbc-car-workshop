@@ -23,3 +23,32 @@ INSERT INTO vehicles (vin, year, make, model, vehicle_type, color, odometer, pri
 (101260, 2022, 'McLaren', 'Sabre', 'Hypercar', 'Silver', 100, 2000000.00, 0),
 (101256, 2022, 'Bugatti', 'Chiron', 'Hypercar', 'Blue', 1500, 3000000.00, 0),
 (378469, 2021, 'Chevrolet', 'Silverado', 'truck', 'Black', 2750, 31995.00, 0);
+
+
+
+INSERT INTO inventory (id, random_value, vin)
+VALUES
+(NULL, 1, 101235),
+(NULL, 2, 101236),
+(NULL, 3, 101237),
+(NULL, 1, 101242),
+(NULL, 2, 101243),
+(NULL, 3, 101241),
+(NULL, 1, 101238),
+(NULL, 2, 101239),
+(NULL, 3, 101244),
+(NULL, 1, 101254),
+(NULL, 2, 101255),
+(NULL, 3, 101245),
+(NULL, 1, 101246),
+(NULL, 2, 101247),
+(NULL, 3, 101250),
+(NULL, 1, 101251),
+(NULL, 2, 101252),
+(NULL, 3, 101253),
+(NULL, 1, 101248),
+(NULL, 2, 129000),
+(NULL, 3, 101259),
+(NULL, 1, 101260),
+(NULL, 2, 101256),
+(NULL, 3, 378469);
