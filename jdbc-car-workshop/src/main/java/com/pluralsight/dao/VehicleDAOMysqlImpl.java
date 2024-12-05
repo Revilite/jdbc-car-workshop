@@ -99,9 +99,48 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
         return vehicles;
+    }
 
+    @Override
+    public List<VehicleforDummies> findVehiclesByPriceRange(double min, double max) {
+        List<VehicleforDummies> vehicles = new ArrayList<>();
+        String make;
+        String model;
+        int year;
+        String color;
+        int odometer;
+        double price;
+        int vin;
+        String vehicleType;
+
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement("""
+                    SELECT make, model, year, color, odometer, price, vehicles.vin, vehicle_type
+                    FROM vehicles
+                    WHERE price BETWEEN ? AND ?;
+                    """);
+            preparedStatement.setDouble(1, min);
+            preparedStatement.setDouble(2, max);
+            ResultSet rs = preparedStatement.executeQuery();
+
+
+            while (rs.next()) {
+                make = rs.getString("make");
+                model = rs.getString("model");
+                year = rs.getInt("year");
+                color = rs.getString("color");
+                odometer = rs.getInt("odometer");
+                price = rs.getDouble("price");
+                vehicleType = rs.getString("vehicle_type");
+                vin = rs.getInt("vin");
+                vehicles.add(new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price));
+
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return vehicles;
     }
 
 }

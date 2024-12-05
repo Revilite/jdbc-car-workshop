@@ -8,5 +8,6 @@ import java.util.List;
 public interface VehicleDao {
     List<VehicleforDummies> findAllVehicles();
     List<VehicleforDummies> findVehiclesByDealership(int id);
+    List<VehicleforDummies> findVehiclesByPriceRange(double min, double max);
 
 }

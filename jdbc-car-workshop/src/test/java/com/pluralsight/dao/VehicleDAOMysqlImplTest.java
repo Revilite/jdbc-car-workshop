@@ -9,19 +9,32 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class VehicleDAOMysqlImplTest {
+import org.junit.jupiter.api.*;
 
-    @Test
-    void findAllVehicles() {
+class VehicleDAOMysqlImplTest {
+    static BasicDataSource ds = new BasicDataSource();
+
+    @BeforeAll
+    static void setup() {
+
+        ds.setUrl("jdbc:mysql://localhost:3306/dealership");
+        ds.setPassword("yearup");
+        ds.setUsername("dealershiptest");
     }
 
     @Test
-    void test_findVehiclesByDealership(){
-        BasicDataSource ds = new BasicDataSource();
+    void findAllVehicles() {
 
-        ds.setUrl("jdbc:mysql://localhost:3306/dealership");
-        ds.setUsername("root");
-        ds.setPassword("yearup");
+        VehicleDAOMysqlImpl vd = new VehicleDAOMysqlImpl(ds);
+
+        List<VehicleforDummies> results = vd.findAllVehicles();
+
+        assertEquals(28, results.size());
+
+    }
+
+    @Test
+    void test_findVehiclesByDealership() {
 
 
         VehicleDAOMysqlImpl vd = new VehicleDAOMysqlImpl(ds);
@@ -35,5 +48,14 @@ class VehicleDAOMysqlImplTest {
         } catch (SQLException e) {
             System.out.println("Something went wrong");
         }
+    }
+
+    @Test
+    void test_findVehiclesByPriceRange(){
+        VehicleDAOMysqlImpl vs = new VehicleDAOMysqlImpl(ds);
+        List<VehicleforDummies> results= vs.findVehiclesByPriceRange(1000, 10000);
+
+        assertEquals(8, results.size());
+
     }
 }
