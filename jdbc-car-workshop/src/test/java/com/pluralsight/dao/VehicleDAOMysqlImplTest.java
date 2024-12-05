@@ -42,20 +42,25 @@ class VehicleDAOMysqlImplTest {
         List<VehicleforDummies> results = vd.findVehiclesByDealership(1);
 
         assertEquals(9, results.size());
+
+    }
+
+    @Test
+    void test_findVehiclesByPriceRange() {
+        VehicleDAOMysqlImpl vs = new VehicleDAOMysqlImpl(ds);
+        List<VehicleforDummies> results = vs.findVehiclesByPriceRange(1000, 10000);
+
+        assertEquals(8, results.size());
+
+    }
+
+    @AfterAll
+    static void tearDown() {
         try {
             ds.close();
 
         } catch (SQLException e) {
             System.out.println("Something went wrong");
         }
-    }
-
-    @Test
-    void test_findVehiclesByPriceRange(){
-        VehicleDAOMysqlImpl vs = new VehicleDAOMysqlImpl(ds);
-        List<VehicleforDummies> results= vs.findVehiclesByPriceRange(1000, 10000);
-
-        assertEquals(8, results.size());
-
     }
 }
