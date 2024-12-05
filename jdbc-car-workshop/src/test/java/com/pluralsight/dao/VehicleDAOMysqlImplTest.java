@@ -16,7 +16,6 @@ class VehicleDAOMysqlImplTest {
 
     @BeforeAll
     static void setup() {
-
         ds.setUrl("jdbc:mysql://localhost:3306/dealership");
         ds.setPassword("yearup");
         ds.setUsername("dealershiptest");
@@ -24,32 +23,22 @@ class VehicleDAOMysqlImplTest {
 
     @Test
     void findAllVehicles() {
-
         VehicleDAOMysqlImpl vd = new VehicleDAOMysqlImpl(ds);
-
         List<VehicleforDummies> results = vd.findAllVehicles();
-
         assertEquals(28, results.size());
-
     }
 
     @Test
     void test_findVehiclesByDealership() {
-
-
         VehicleDAOMysqlImpl vd = new VehicleDAOMysqlImpl(ds);
-
         List<VehicleforDummies> results = vd.findVehiclesByDealership(1);
-
         assertEquals(9, results.size());
-
     }
 
     @Test
     void test_findVehiclesByPriceRange() {
         VehicleDAOMysqlImpl vs = new VehicleDAOMysqlImpl(ds);
         List<VehicleforDummies> results = vs.findVehiclesByPriceRange(1000, 10000);
-
         assertEquals(8, results.size());
 
     }
@@ -62,5 +51,35 @@ class VehicleDAOMysqlImplTest {
         } catch (SQLException e) {
             System.out.println("Something went wrong");
         }
+    }
+
+
+    @Test
+    void findVehiclesByMakeModel() {
+        VehicleDAOMysqlImpl vs = new VehicleDAOMysqlImpl(ds);
+        List<VehicleforDummies> results = vs.findVehiclesByMakeModel("Toyota", "Corolla");
+        assertEquals(1, results.size());
+    }
+
+    @Test
+    void findVehiclesByYear() {
+        VehicleDAOMysqlImpl vs = new VehicleDAOMysqlImpl(ds);
+        List<VehicleforDummies> results = vs.findVehiclesByYear(2000, 2024);
+        assertEquals(27, results.size());
+    }
+
+    @Test
+    void findVehicleByColor() {
+        VehicleDAOMysqlImpl vs = new VehicleDAOMysqlImpl(ds);
+        List<VehicleforDummies> results = vs.findVehicleByColor("yellow");
+        assertEquals(3, results.size());
+    }
+
+    @Test
+    void findVehicleByMileRange() {
+    }
+
+    @Test
+    void findVehicleByVehicleType() {
     }
 }
