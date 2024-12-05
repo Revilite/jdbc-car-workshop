@@ -1,9 +1,8 @@
 package com.pluralsight.dao;
 
-import com.pluralsight.model.vehicle.Vehicle;
 import com.pluralsight.model.vehicle.VehicleforDummies;
 
-import javax.imageio.plugins.jpeg.JPEGImageReadParam;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,7 +30,8 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement findAllVehicles = connection.prepareStatement("""
                     SELECT make, model, year, color, odometer, price, vin, vehicle_type
-                    FROM vehicles;
+                    FROM vehicles
+                    ORDER BY price;
                     """);
             findAllVehicles.executeQuery();
 
@@ -103,7 +103,8 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
             PreparedStatement preparedStatement = connection.prepareStatement("""
                     SELECT make, model, year, color, odometer, price, vehicles.vin, vehicle_type
                     FROM vehicles
-                    WHERE price BETWEEN ? AND ?;
+                    WHERE price BETWEEN ? AND ?
+                    ORDER BY price;
                     """);
             preparedStatement.setDouble(1, min);
             preparedStatement.setDouble(2, max);
@@ -138,6 +139,7 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
                     SELECT make, model, year, color, odometer, price, vin, vehicle_type
                     FROM vehicles
                     WHERE make = ? AND model = ?
+                    ORDER BY price;
                     """);
 
             findByMakeModel.setString(1, userMake);
@@ -173,7 +175,8 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
             PreparedStatement findByYear = connection.prepareStatement("""
                     SELECT make, model, year, color, odometer, price, vin, vehicle_type
                     FROM vehicles
-                    WHERE year BETWEEN ? AND ?;
+                    WHERE year BETWEEN ? AND ?
+                    ORDER BY year DESC;
                     """);
             findByYear.setInt(1, minYear);
             findByYear.setInt(2, maxYear);
@@ -208,7 +211,8 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
             PreparedStatement findByColor = connection.prepareStatement("""
                     SELECT make, model, year, color, odometer, price, vin, vehicle_type
                     FROM vehicles
-                    WHERE color = ?;
+                    WHERE color = ?
+                    ORDER BY price;
                     """);
             findByColor.setString(1, userColor);
             ResultSet rs = findByColor.executeQuery();
@@ -232,7 +236,7 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
     }
 
     @Override
-    public List<VehicleforDummies> findVehicleByMileRange(int userOdometer) {
+    public List<VehicleforDummies> findVehicleByMileRange(int minOdom, int maxOdom) {
         List<VehicleforDummies> vehicles = new ArrayList<>();
         String make, model, color, vehicleType;
         int year, odometer, vin;
@@ -242,9 +246,11 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
             PreparedStatement findByMileage = connection.prepareStatement("""
                     SELECT make, model, year, color, odometer, price, vin, vehicle_type
                     FROM vehicles
-                    WHERE odometer = ?;
+                    WHERE odometer BETWEEN ? AND ?
+                    ORDER BY odometer;
                     """);
-            findByMileage.setInt(1, userOdometer);
+            findByMileage.setInt(1, minOdom);
+            findByMileage.setInt(2, maxOdom);
 
             ResultSet rs = findByMileage.executeQuery();
 
@@ -299,6 +305,47 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
         }
 
         return vehicles;
+    }
+
+    @Override
+    public void removeVehicleByVIN(int vin) {
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement removeVehicle = connection.prepareStatement("""
+                    DELETE vehicles, inventory
+                    FROM inventory
+                    JOIN vehicles ON inventory.vin = vehicles.vin
+                    WHERE inventory.vin = ?;
+                    """);
+            removeVehicle.setInt(1, vin);
+
+            removeVehicle.executeUpdate();
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void addVehicle(int vin, int year, String make, String model, String vehicleType, String color, int odometer, double price) {
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement addVehicle = connection.prepareStatement("""
+                    INSERT INTO vehicles (vin, year, make, model, vehicle_type, color, odometer, price, sold) VALUE
+                    (?,?,?,?,?,?,?,?,0);
+                    """);
+            addVehicle.setInt(1, vin);
+            addVehicle.setInt(2, year);
+            addVehicle.setString(3, make);
+            addVehicle.setString(4, model);
+            addVehicle.setString(5, vehicleType);
+            addVehicle.setString(6, color);
+            addVehicle.setInt(7, odometer);
+            addVehicle.setDouble(8, price);
+
+            addVehicle.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Vehicle with the same vin already added!");
+        }
     }
 
 

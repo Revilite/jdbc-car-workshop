@@ -6,7 +6,7 @@ import com.pluralsight.model.vehicle.Vehicle;
 import com.pluralsight.model.vehicle.VehicleforDummies;
 import com.pluralsight.view.JavaHelpers.ColorCodes;
 import com.pluralsight.model.contract.*;
-import org.apache.commons.dbcp2.BasicDataSource;
+
 
 import javax.sql.DataSource;
 import java.text.NumberFormat;
@@ -15,10 +15,10 @@ import java.util.Scanner;
 
 public class UserInterface {
     private Dealership dealership;
-    private DataSource dataSource;
+    private VehicleDAOMysqlImpl vehicleDB;
 
     public void display(DataSource dataSource) {
-        this.dataSource = dataSource;
+        this.vehicleDB = new VehicleDAOMysqlImpl(dataSource);
         Scanner scan = new Scanner(System.in);
         String userChoice = "";
         System.out.printf("""
@@ -188,7 +188,7 @@ public class UserInterface {
 
     public void processGetByPriceRequest() {
         int[] userRange = getUserRange("price");
-        System.out.println(displayVehicles(dealership.getVehiclesByPrice(userRange[0], userRange[1])));
+        System.out.println(displayVehicles(vehicleDB.findVehiclesByPriceRange(userRange[0], userRange[1])));
     }
 
     public void processGetByMakeModelRequest() {
@@ -200,12 +200,12 @@ public class UserInterface {
         }
         String[] makeModel = userInput.trim().split(" ");
 
-        System.out.println(displayVehicles(dealership.getVehiclesByMakeModel(makeModel[0], makeModel[1])));
+        System.out.println(displayVehicles(vehicleDB.findVehiclesByMakeModel(makeModel[0], makeModel[1])));
     }
 
     public void processGetByYearRequest() {
         int[] userRange = getUserRange("year");
-        System.out.println(displayVehicles(dealership.getVehiclesByYear(userRange[0], userRange[1])));
+        System.out.println(displayVehicles(vehicleDB.findVehiclesByPriceRange(userRange[0], userRange[1])));
     }
 
     public void processGetByColorRequest() {
@@ -215,12 +215,12 @@ public class UserInterface {
         if (color.equalsIgnoreCase("x")) {
             return;
         }
-        System.out.println(displayVehicles(dealership.getVehiclesByColor(color)));
+        System.out.println(displayVehicles(vehicleDB.findVehicleByColor(color)));
     }
 
     public void processGetByMileageRequest() {
         int[] userRange = getUserRange("mileage");
-        System.out.println(displayVehicles(dealership.getVehiclesByMileage(userRange[0], userRange[1])));
+        System.out.println(displayVehicles(vehicleDB.findVehicleByMileRange(userRange[0], userRange[1])));
     }
 
     public void processGetByTypeRequest() {
@@ -231,12 +231,11 @@ public class UserInterface {
             return;
         }
 
-        System.out.println(displayVehicles(dealership.getVehiclesByType(type)));
+        System.out.println(displayVehicles(vehicleDB.findVehicleByVehicleType(type)));
     }
 
     public void processGetAllRequest() {
-        VehicleDAOMysqlImpl request = new VehicleDAOMysqlImpl(dataSource);
-        System.out.println(displayVehicles(request.findAllVehicles()));
+        System.out.println(displayVehicles(vehicleDB.findAllVehicles()));
     }
 
     public String prompt(String prompt) {
@@ -319,7 +318,7 @@ public class UserInterface {
             return;
         }
 
-        dealership.addVehicle(new VehicleforDummies(vin, year, make, model, type, color, mileage, price));
+        vehicleDB.addVehicle(vin, year, make, model, type, color, mileage, price);
         System.out.println(ColorCodes.GREEN + "Car added!" + ColorCodes.RESET);
 
     }
@@ -331,7 +330,7 @@ public class UserInterface {
             return;
         }
 
-        dealership.removeVehicle(dealership.getVehiclesByVin(vin).get(0));
+        vehicleDB.removeVehicleByVIN(vin);
         System.out.println(ColorCodes.RED + "Car removed" + ColorCodes.RESET);
     }
 
