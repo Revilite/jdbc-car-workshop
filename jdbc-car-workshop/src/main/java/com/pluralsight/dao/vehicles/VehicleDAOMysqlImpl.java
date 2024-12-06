@@ -26,10 +26,11 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
         String make, model, color, vehicleType;
         int year, odometer, vin;
         double price;
+        boolean sold;
 
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement findAllVehicles = connection.prepareStatement("""
-                    SELECT make, model, year, color, odometer, price, vin, vehicle_type
+                    SELECT make, model, year, color, odometer, price, vin, vehicle_type, sold
                     FROM vehicles
                     ORDER BY price;
                     """);
@@ -45,8 +46,12 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
                 odometer = rs.getInt("odometer");
                 price = rs.getDouble("price");
                 vin = rs.getInt("vin");
+                sold = rs.getBoolean("sold");
                 vehicleType = rs.getString("vehicle_type");
-                vehicles.add(new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price));
+                if (!sold) {
+                    vehicles.add(new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price));
+
+                }
             }
 
             return vehicles;
@@ -58,12 +63,53 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
     }
 
     @Override
+    public List<VehicleforDummies> findAllAvialableVehicles() {
+        List<VehicleforDummies> vehicles = new ArrayList<>();
+        boolean sold;
+        String make, model, color, vehicleType;
+        int year, odometer, vin;
+        double price;
+
+
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement findAllVehicles = connection.prepareStatement("""
+                    SELECT make, model, year, color, odometer, price, vin, vehicle_type, sold, sold
+                    FROM vehicles
+                    ORDER BY price;
+                    """);
+            findAllVehicles.executeQuery();
+
+            ResultSet rs = findAllVehicles.getResultSet();
+
+            while (rs.next()) {
+                make = rs.getString("make");
+                model = rs.getString("model");
+                year = rs.getInt("year");
+                color = rs.getString("color");
+                odometer = rs.getInt("odometer");
+                price = rs.getDouble("price");
+                vin = rs.getInt("vin");
+                sold = rs.getBoolean("sold");
+                vehicleType = rs.getString("vehicle_type");
+                if (!sold) {
+                    vehicles.add(new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price));
+                }
+
+            }
+
+            return vehicles;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public List<VehicleforDummies> findVehiclesByDealership(int id) {
         List<VehicleforDummies> vehicles = new ArrayList<>();
         String make, model, color, vehicleType;
         int year, odometer, vin;
         double price;
-
+        boolean sold;
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("""
                     SELECT make, model, year, color, odometer, price, vehicles.vin, vehicle_type
@@ -84,7 +130,11 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
                 price = rs.getDouble("price");
                 vehicleType = rs.getString("vehicle_type");
                 vin = rs.getInt("vin");
-                vehicles.add(new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price));
+                sold = rs.getBoolean("sold");
+                if (!sold) {
+                    vehicles.add(new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price));
+
+                }
 
             }
         } catch (SQLException e) {
@@ -99,6 +149,8 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
         String make, model, color, vehicleType;
         int year, odometer, vin;
         double price;
+        boolean sold;
+
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("""
                     SELECT make, model, year, color, odometer, price, vehicles.vin, vehicle_type
@@ -118,8 +170,10 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
                 price = rs.getDouble("price");
                 vehicleType = rs.getString("vehicle_type");
                 vin = rs.getInt("vin");
-                vehicles.add(new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price));
-
+                sold = rs.getBoolean("sold");
+                if (!sold) {
+                    vehicles.add(new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price));
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -133,10 +187,10 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
         String make, model, color, vehicleType;
         int year, odometer, vin;
         double price;
-
+        boolean sold;
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement findByMakeModel = connection.prepareStatement("""
-                    SELECT make, model, year, color, odometer, price, vin, vehicle_type
+                    SELECT make, model, year, color, odometer, price, vin, vehicle_type, sold
                     FROM vehicles
                     WHERE make = ? AND model = ?
                     ORDER BY price;
@@ -155,7 +209,11 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
                 price = rs.getDouble("price");
                 vehicleType = rs.getString("vehicle_type");
                 vin = rs.getInt("vin");
-                vehicles.add(new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price));
+                sold = rs.getBoolean("sold");
+                if (!sold) {
+                    vehicles.add(new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price));
+
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -170,10 +228,10 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
         String make, model, color, vehicleType;
         int year, odometer, vin;
         double price;
-
+        boolean sold;
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement findByYear = connection.prepareStatement("""
-                    SELECT make, model, year, color, odometer, price, vin, vehicle_type
+                    SELECT make, model, year, color, odometer, price, vin, vehicle_type, sold
                     FROM vehicles
                     WHERE year BETWEEN ? AND ?
                     ORDER BY year DESC;
@@ -191,7 +249,11 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
                 price = rs.getDouble("price");
                 vehicleType = rs.getString("vehicle_type");
                 vin = rs.getInt("vin");
-                vehicles.add(new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price));
+                sold = rs.getBoolean("sold");
+                if (!sold) {
+                    vehicles.add(new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price));
+
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -206,10 +268,10 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
         String make, model, color, vehicleType;
         int year, odometer, vin;
         double price;
-
+        boolean sold;
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement findByColor = connection.prepareStatement("""
-                    SELECT make, model, year, color, odometer, price, vin, vehicle_type
+                    SELECT make, model, year, color, odometer, price, vin, vehicle_type, sold
                     FROM vehicles
                     WHERE color = ?
                     ORDER BY price;
@@ -226,7 +288,10 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
                 price = rs.getDouble("price");
                 vehicleType = rs.getString("vehicle_type");
                 vin = rs.getInt("vin");
-                vehicles.add(new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price));
+                sold = rs.getBoolean("sold");
+                if (!sold) {
+                    vehicles.add(new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price));
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -241,10 +306,10 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
         String make, model, color, vehicleType;
         int year, odometer, vin;
         double price;
-
+        boolean sold;
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement findByMileage = connection.prepareStatement("""
-                    SELECT make, model, year, color, odometer, price, vin, vehicle_type
+                    SELECT make, model, year, color, odometer, price, vin, vehicle_type, sold
                     FROM vehicles
                     WHERE odometer BETWEEN ? AND ?
                     ORDER BY odometer;
@@ -263,7 +328,11 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
                 price = rs.getDouble("price");
                 vehicleType = rs.getString("vehicle_type");
                 vin = rs.getInt("vin");
-                vehicles.add(new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price));
+                sold = rs.getBoolean("sold");
+                if (!sold) {
+                    vehicles.add(new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price));
+
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -278,10 +347,10 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
         String make, model, color, vehicleType;
         int year, odometer, vin;
         double price;
-
+        boolean sold;
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement findByVehicleType = connection.prepareStatement("""
-                    SELECT make, model, year, color, odometer, price, vin, vehicle_type
+                    SELECT make, model, year, color, odometer, price, vin, vehicle_type, sold
                     FROM vehicles
                     WHERE vehicle_type = ?;
                     """);
@@ -299,7 +368,11 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
                 price = rs.getDouble("price");
                 vehicleType = rs.getString("vehicle_type");
                 vin = rs.getInt("vin");
-                vehicles.add(new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price));
+                sold = rs.getBoolean("sold");
+                if (!sold) {
+                    vehicles.add(new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price));
+
+                }
             }
 
         } catch (SQLException e) {
@@ -315,10 +388,10 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
         String make, model, color, vehicleType;
         int year, odometer, vin;
         double price;
-
+        boolean sold;
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement findByVehicleType = connection.prepareStatement("""
-                    SELECT make, model, year, color, odometer, price, vin, vehicle_type
+                    SELECT make, model, year, color, odometer, price, vin, vehicle_type, sold
                     FROM vehicles
                     WHERE vin = ?;
                     """);
@@ -335,10 +408,17 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
                 price = rs.getDouble("price");
                 vehicleType = rs.getString("vehicle_type");
                 vin = rs.getInt("vin");
-                vehicle = new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price);
+                sold = rs.getBoolean("sold");
+
+                if (!sold) {
+                    vehicle = new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price);
+                }
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (
+                SQLException e) {
+            throw new
+
+                    RuntimeException(e);
         }
         return vehicle;
     }
@@ -386,3 +466,6 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
 
 
 }
+
+
+// 101257, 101261, 101236, 101237, 101238, 101239, 101240

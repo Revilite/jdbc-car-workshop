@@ -1,5 +1,6 @@
 package com.pluralsight.view;
 
+import com.pluralsight.dao.contracts.LeaseContractDAOMysqlImpl;
 import com.pluralsight.dao.contracts.SalesContractDAOMysqlImpl;
 import com.pluralsight.dao.vehicles.VehicleDAOMysqlImpl;
 import com.pluralsight.model.vehicle.Dealership;
@@ -10,7 +11,6 @@ import com.pluralsight.model.contract.*;
 
 
 import javax.sql.DataSource;
-import javax.xml.crypto.Data;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Scanner;
@@ -19,10 +19,12 @@ public class UserInterface {
     private Dealership dealership;
     private VehicleDAOMysqlImpl vehicleDB;
     private SalesContractDAOMysqlImpl salesContractDB;
+    private LeaseContractDAOMysqlImpl leaseContractDB;
 
     public UserInterface(DataSource dataSource) {
         this.vehicleDB = new VehicleDAOMysqlImpl(dataSource);
         this.salesContractDB = new SalesContractDAOMysqlImpl(dataSource);
+        this.leaseContractDB = new LeaseContractDAOMysqlImpl(dataSource);
     }
 
     public void display() {
@@ -242,7 +244,7 @@ public class UserInterface {
     }
 
     public void processGetAllRequest() {
-        System.out.println(displayVehicles(vehicleDB.findAllVehicles()));
+        System.out.println(displayVehicles(vehicleDB.findAllAvialableVehicles()));
     }
 
     public String prompt(String prompt) {
@@ -399,7 +401,7 @@ public class UserInterface {
                 salesContractDB.saveSalesContract(new SalesContract(customerName, customerEmail, soldVehicle, isFinancing));
                 break;
             } else if (sellOrLeaseInput.equalsIgnoreCase("lease")) {
-//                contract = new LeaseContract(customerName, customerEmail, soldVehicle);
+                leaseContractDB.addLeaseContract(new LeaseContract(customerName, customerEmail, soldVehicle));
                 break;
             } else {
                 System.out.println("Wrong Input");
@@ -407,7 +409,7 @@ public class UserInterface {
             }
         }
 
-        vehicleDB.removeVehicleByVIN(soldVehicle.getVin());
+//        vehicleDB.removeVehicleByVIN(soldVehicle.getVin());
         System.out.println("Vehicle Sold!");
     }
 

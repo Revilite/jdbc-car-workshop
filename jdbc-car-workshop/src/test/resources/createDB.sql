@@ -102,7 +102,7 @@ VALUES
 
 
 
-CREATE TABLE `sales_contract`(
+CREATE TABLE `sales_contracts`(
     `sales_contract_id` INT NOT NULL AUTO_INCREMENT,
     `sales_tax_amount` DECIMAL(10, 2),
     `recording_fee` DECIMAL(6, 2),
@@ -119,6 +119,28 @@ CREATE TABLE `sales_contract`(
 
 );
 
-INSERT INTO sales_contract VALUES(null, 1525000.00, 100.00, 491.00, 21350000.00, '2024-10-31', 'Jacob Lockhart', 'prcooder165@gmail.com', 101257, 0);
-INSERT INTO sales_contract VALUES(null, 2050000.00, 100.00, 630.00, 2370000.00, '2024-11-03', 'Jacob Lockhart', 'prcooder165@gmail.com', 101261, 0);
-INSERT INTO sales_contract VALUES(null, 5000.00, 100.00, 115.00, 7500.00, '2024-11-10', 'Jacob Lockhart', 'prcooder165@gmail.com', 101257, 0);
+INSERT INTO sales_contracts VALUES(null, 1525000.00, 100.00, 491.00, 21350000.00, '2024-10-31', 'Jacob Lockhart', 'prcooder165@gmail.com', 101257, 0);
+INSERT INTO sales_contracts VALUES(null, 2050000.00, 100.00, 630.00, 2370000.00, '2024-11-03', 'Jacob Lockhart', 'prcooder165@gmail.com', 101261, 0);
+INSERT INTO sales_contracts VALUES(null, 5000.00, 100.00, 115.00, 7500.00, '2024-11-10', 'Jacob Lockhart', 'prcooder165@gmail.com', 101257, 0);
+
+CREATE TABLE `lease_contracts`(
+	`lease_contract_id` INT NOT NULL AUTO_INCREMENT,
+    `date` DATE,
+    `customer_name` VARCHAR(50),
+    `customer_email` VARCHAR(50),
+    `vin` INT,
+    `total_price` DECIMAL(10, 2),
+    `expected_ending_value` DECIMAL(10,2),
+    `lease_fee` DECIMAL(10, 2),
+    `monthly_payment` DECIMAL(10, 2),
+
+    PRIMARY KEY (lease_contract_id),
+    FOREIGN KEY (vin) REFERENCES vehicles(vin)
+);
+INSERT INTO `lease_contracts` (`date`, `customer_name`, `customer_email`, `vin`, `total_price`, `expected_ending_value`, `lease_fee`, `monthly_payment`)
+VALUES
+('2024-11-15', 'Alice Johnson', 'alicej@example.com', 101236, 28000.00, 16000.00, 600.00, 400.00),
+('2024-10-10', 'Robert Smith', 'robertsmith@example.com', 101237, 35000.00, 20000.00, 700.00, 500.00),
+('2024-09-20', 'Megan Taylor', 'megantaylor@example.com', 101238, 22000.00, 13000.00, 550.00, 375.00),
+('2024-08-05', 'James Brown', 'jamesbrown@example.com', 101239, 27000.00, 14500.00, 625.00, 450.00),
+('2024-07-18', 'Emily Davis', 'emilydavis@example.com', 101240, 32000.00, 19000.00, 700.00, 525.00);

@@ -26,10 +26,9 @@ public class SalesContractDAOMysqlImpl implements SalesContractDao {
         try (Connection connection = dataSource.getConnection()) {
 
             PreparedStatement saveContract = connection.prepareStatement("""
-                    INSERT INTO sales_contract (sales_contract_id, sales_tax_amount, recording_fee, processing_fee, total_price, date, customer_name, customer_email, vin, is_financing)
+                    INSERT INTO sales_contracts (sales_tax_amount, recording_fee, processing_fee, total_price, date, customer_name, customer_email, vin, is_financing)
                     VALUES
-                    (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-                    
+                    (?, ?, ?, ?, ?, ?, ?, ?, ?);
                     """);
             saveContract.setDouble(1, salesContract.getSalesTaxAmount());
             saveContract.setDouble(2, salesContract.getRecordingFee());
@@ -41,8 +40,16 @@ public class SalesContractDAOMysqlImpl implements SalesContractDao {
             saveContract.setInt(8, salesContract.getVehicleSold().getVin());
             saveContract.setBoolean(9, salesContract.isFinancing());
 
+            PreparedStatement updateVehicle = connection.prepareStatement("""
+                    UPDATE vehicles
+                    set sold = 1
+                    WHERE vin = ?;
+                    """);
+
+            updateVehicle.setInt(1, salesContract.getVehicleSold().getVin());
 
             saveContract.executeUpdate();
+            updateVehicle.executeUpdate();
 
         } catch (SQLException e) {
             System.out.println("VIN does not exist");
