@@ -1,6 +1,7 @@
 package com.pluralsight.view;
 
-import com.pluralsight.dao.VehicleDAOMysqlImpl;
+import com.pluralsight.dao.contracts.SalesContractDAOMysqlImpl;
+import com.pluralsight.dao.vehicles.VehicleDAOMysqlImpl;
 import com.pluralsight.model.vehicle.Dealership;
 import com.pluralsight.model.vehicle.Vehicle;
 import com.pluralsight.model.vehicle.VehicleforDummies;
@@ -9,6 +10,7 @@ import com.pluralsight.model.contract.*;
 
 
 import javax.sql.DataSource;
+import javax.xml.crypto.Data;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Scanner;
@@ -16,9 +18,14 @@ import java.util.Scanner;
 public class UserInterface {
     private Dealership dealership;
     private VehicleDAOMysqlImpl vehicleDB;
+    private SalesContractDAOMysqlImpl salesContractDB;
 
-    public void display(DataSource dataSource) {
+    public UserInterface(DataSource dataSource) {
         this.vehicleDB = new VehicleDAOMysqlImpl(dataSource);
+        this.salesContractDB = new SalesContractDAOMysqlImpl(dataSource);
+    }
+
+    public void display() {
         Scanner scan = new Scanner(System.in);
         String userChoice = "";
         System.out.printf("""
@@ -373,35 +380,35 @@ public class UserInterface {
 
         while (true) {
             int vin = convertToInt(salesPrompt("What is the vin number of th vehicle?"));
-            if (dealership.getVehiclesByVin(vin).size() == 1) {
-                soldVehicle = dealership.getVehiclesByVin(vin).get(0);
+            if (vin == -1) {
+                System.out.println("Could not find car!");
+                return; //Returns to main menu
+            } else {
+
+                soldVehicle = vehicleDB.findVehicleByVIN(vin);
                 break;
             }
-            if (vin == -1) {
-                return; //Returns to main menu
-            }
-            System.out.println("Could not find car!");
         }
 
-        Contract contract;
         while (true) {
             String sellOrLeaseInput = salesPrompt("Would the customer like to sell or lease a vehicle?  (sell/lease)");
             if (sellOrLeaseInput == null) {
                 return;
             } else if (sellOrLeaseInput.equalsIgnoreCase("sell")) {
                 boolean isFinancing = convertToBoolean(salesPrompt("Is the customer financing?  (Yes/No)   "));
-
-                contract = new SalesContract(customerName, customerEmail, soldVehicle, isFinancing);
+                salesContractDB.saveSalesContract(new SalesContract(customerName, customerEmail, soldVehicle, isFinancing));
                 break;
             } else if (sellOrLeaseInput.equalsIgnoreCase("lease")) {
-                contract = new LeaseContract(customerName, customerEmail, soldVehicle);
+//                contract = new LeaseContract(customerName, customerEmail, soldVehicle);
                 break;
             } else {
                 System.out.println("Wrong Input");
 
             }
         }
-        dealership.removeVehicle((VehicleforDummies) soldVehicle);
+
+        vehicleDB.removeVehicleByVIN(soldVehicle.getVin());
+        System.out.println("Vehicle Sold!");
     }
 
     public void processAdminUI() {

@@ -1,8 +1,7 @@
-package com.pluralsight.dao;
+package com.pluralsight.dao.vehicles;
 
 
 import com.pluralsight.model.vehicle.Dealership;
-import com.pluralsight.model.vehicle.Vehicle;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

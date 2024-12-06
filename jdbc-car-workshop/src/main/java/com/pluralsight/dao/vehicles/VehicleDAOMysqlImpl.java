@@ -1,4 +1,4 @@
-package com.pluralsight.dao;
+package com.pluralsight.dao.vehicles;
 
 import com.pluralsight.model.vehicle.VehicleforDummies;
 
@@ -289,6 +289,7 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
 
             ResultSet rs = findByVehicleType.executeQuery();
 
+
             while (rs.next()) {
                 make = rs.getString("make");
                 model = rs.getString("model");
@@ -300,11 +301,46 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
                 vin = rs.getInt("vin");
                 vehicles.add(new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price));
             }
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
         return vehicles;
+    }
+
+    @Override
+    public VehicleforDummies findVehicleByVIN(int userVin) {
+        VehicleforDummies vehicle = null;
+        String make, model, color, vehicleType;
+        int year, odometer, vin;
+        double price;
+
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement findByVehicleType = connection.prepareStatement("""
+                    SELECT make, model, year, color, odometer, price, vin, vehicle_type
+                    FROM vehicles
+                    WHERE vin = ?;
+                    """);
+            findByVehicleType.setInt(1, userVin);
+
+            ResultSet rs = findByVehicleType.executeQuery();
+
+            while (rs.next()) {
+                make = rs.getString("make");
+                model = rs.getString("model");
+                year = rs.getInt("year");
+                color = rs.getString("color");
+                odometer = rs.getInt("odometer");
+                price = rs.getDouble("price");
+                vehicleType = rs.getString("vehicle_type");
+                vin = rs.getInt("vin");
+                vehicle = new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return vehicle;
     }
 
     @Override

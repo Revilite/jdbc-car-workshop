@@ -12,6 +12,6 @@ public class App {
         dataSource.setPassword(args[1]);
         dataSource.setUrl("jdbc:mysql://localhost:3306/dealership");
 
-        new UserInterface().display(dataSource);
+        new UserInterface(dataSource).display();
     }
 }

@@ -1,4 +1,4 @@
-package com.pluralsight.dao;
+package com.pluralsight.dao.vehicles;
 
 import com.pluralsight.model.vehicle.*;
 import java.util.List;

@@ -5,6 +5,6 @@ import com.pluralsight.model.contract.SalesContract;
 import java.util.List;
 
 public interface SalesContractDao {
-    List<SalesContract> findAllSales();
+    void saveSalesContract(SalesContract salesContract);
 
 }

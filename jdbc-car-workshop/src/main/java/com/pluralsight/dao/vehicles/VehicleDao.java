@@ -1,4 +1,4 @@
-package com.pluralsight.dao;
+package com.pluralsight.dao.vehicles;
 
 import com.pluralsight.model.vehicle.VehicleforDummies;
 
@@ -14,6 +14,7 @@ import java.util.List;
         List<VehicleforDummies> findVehicleByColor(String color);
         List<VehicleforDummies> findVehicleByMileRange(int minOdom, int maxOdom);
         List<VehicleforDummies> findVehicleByVehicleType(String vehicleType);
+        VehicleforDummies findVehicleByVIN(int vin);
 
         void removeVehicleByVIN(int vin);
         void addVehicle(int vin, int year, String make, String model, String vehicleType, String color, int odometer, double price);
