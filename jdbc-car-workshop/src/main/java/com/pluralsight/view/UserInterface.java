@@ -3,7 +3,6 @@ package com.pluralsight.view;
 import com.pluralsight.dao.contracts.LeaseContractDAOMysqlImpl;
 import com.pluralsight.dao.contracts.SalesContractDAOMysqlImpl;
 import com.pluralsight.dao.vehicles.VehicleDAOMysqlImpl;
-import com.pluralsight.model.vehicle.Dealership;
 import com.pluralsight.model.vehicle.Vehicle;
 import com.pluralsight.model.vehicle.VehicleforDummies;
 import com.pluralsight.view.JavaHelpers.ColorCodes;
@@ -16,7 +15,6 @@ import java.util.List;
 import java.util.Scanner;
 
 public class UserInterface {
-    private Dealership dealership;
     private VehicleDAOMysqlImpl vehicleDB;
     private SalesContractDAOMysqlImpl salesContractDB;
     private LeaseContractDAOMysqlImpl leaseContractDB;
@@ -89,7 +87,7 @@ public class UserInterface {
                     processSellLeaseVehicle();
                     break;
                 case ("11"):
-//                    processAdminUI();
+                    processAdminUI();
                     break;
                 case ("99"):
                     break;
@@ -380,17 +378,16 @@ public class UserInterface {
             return; //Returns to main menu
         }
 
-        while (true) {
-            int vin = convertToInt(salesPrompt("What is the vin number of th vehicle?"));
-            if (vin == -1) {
-                System.out.println("Could not find car!");
-                return; //Returns to main menu
-            } else {
 
-                soldVehicle = vehicleDB.findVehicleByVIN(vin);
-                break;
-            }
+        int vin = convertToInt(salesPrompt("What is the vin number of th vehicle?"));
+        if (vin == -1) {
+            System.out.println("Could not find car!");
+            return; //Returns to main menu
+        } else {
+
+            soldVehicle = vehicleDB.findVehicleByVIN(vin);
         }
+
 
         while (true) {
             String sellOrLeaseInput = salesPrompt("Would the customer like to sell or lease a vehicle?  (sell/lease)");
@@ -409,13 +406,12 @@ public class UserInterface {
             }
         }
 
-//        vehicleDB.removeVehicleByVIN(soldVehicle.getVin());
         System.out.println("Vehicle Sold!");
     }
 
     public void processAdminUI() {
         Scanner scan = new Scanner(System.in);
-        new AdminUserInterface().logIn(salesPrompt("What is the password?"));
+        new AdminUserInterface(leaseContractDB, salesContractDB).logIn(salesPrompt("What is the password?"));
 
     }
 }

@@ -7,4 +7,5 @@ import java.util.List;
 public interface SalesContractDao {
     void saveSalesContract(SalesContract salesContract);
 
+    List<SalesContract> findAllSalesContracts();
 }

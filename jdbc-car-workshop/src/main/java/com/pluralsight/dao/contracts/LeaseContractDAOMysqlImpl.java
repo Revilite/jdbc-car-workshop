@@ -1,11 +1,17 @@
 package com.pluralsight.dao.contracts;
 
 import com.pluralsight.model.contract.LeaseContract;
+import com.pluralsight.model.contract.SalesContract;
+import com.pluralsight.model.vehicle.Vehicle;
+import com.pluralsight.model.vehicle.VehicleforDummies;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LeaseContractDAOMysqlImpl implements LeaseContractDao {
     private DataSource dataSource;
@@ -44,5 +50,49 @@ public class LeaseContractDAOMysqlImpl implements LeaseContractDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public List<LeaseContract> findAllLeaseContracts() {
+
+        List<LeaseContract> contracts = new ArrayList<>();
+
+        String date, customerName, customerEmail, make, model, vehicleType, color;
+        int vin, year, odometer;
+        double price;
+        Vehicle vehicleSold;
+
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement findAllSales = connection.prepareStatement("""
+                    SELECT * FROM lease_contracts
+                    JOIN vehicles ON vehicles.vin = lease_contracts.vin
+                    ORDER BY date;
+                    """);
+
+            ResultSet resultSet = findAllSales.executeQuery();
+
+            while (resultSet.next()) {
+                date = resultSet.getString("date");
+                customerName = resultSet.getString("customer_name");
+                customerEmail = resultSet.getString("customer_email");
+                make = resultSet.getString("make");
+                model = resultSet.getString("model");
+                vehicleType = resultSet.getString("vehicle_type");
+                color = resultSet.getString("color");
+                vin = resultSet.getInt("vin");
+                year = resultSet.getInt("year");
+                odometer = resultSet.getInt("odometer");
+                price = resultSet.getDouble("price");
+
+
+                vehicleSold = new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price);
+                contracts.add(new LeaseContract(date, customerName, customerEmail, vehicleSold));
+
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return contracts;
     }
 }

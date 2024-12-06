@@ -1,9 +1,10 @@
 package com.pluralsight.dao.contracts;
 
 import com.pluralsight.model.contract.SalesContract;
-import com.pluralsight.model.vehicle.Dealership;
+import com.pluralsight.model.vehicle.Vehicle;
+import com.pluralsight.model.vehicle.VehicleforDummies;
 
-import javax.sound.midi.Soundbank;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -56,4 +57,51 @@ public class SalesContractDAOMysqlImpl implements SalesContractDao {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public List<SalesContract> findAllSalesContracts() {
+        List<SalesContract> contracts = new ArrayList<>();
+
+        String date, customerName, customerEmail, make, model, vehicleType, color;
+        int vin, year, odometer;
+        double price;
+        boolean isFinancing;
+        Vehicle vehicleSold;
+
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement findAllSales = connection.prepareStatement("""
+                    SELECT * FROM sales_contracts
+                    JOIN vehicles ON vehicles.vin = sales_contracts.vin
+                    ORDER BY date;
+                    """);
+
+            ResultSet resultSet = findAllSales.executeQuery();
+
+            while (resultSet.next()) {
+
+
+                date = resultSet.getString("date");
+                customerName = resultSet.getString("customer_name");
+                customerEmail = resultSet.getString("customer_email");
+                make = resultSet.getString("make");
+                model = resultSet.getString("model");
+                vehicleType = resultSet.getString("vehicle_type");
+                color = resultSet.getString("color");
+                vin = resultSet.getInt("vin");
+                year = resultSet.getInt("year");
+                odometer = resultSet.getInt("odometer");
+                price = resultSet.getDouble("price");
+                isFinancing = resultSet.getBoolean("is_financing");
+
+                vehicleSold = new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price);
+                contracts.add(new SalesContract(date, customerName, customerEmail, vehicleSold, isFinancing));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return contracts;
+    }
+
+
 }
