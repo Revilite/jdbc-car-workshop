@@ -1,0 +1,76 @@
+@startuml
+interface com.pluralsight.dao.contracts.SalesContractDao {
+~ void saveSalesContract(SalesContract)
+~ List<SalesContract> findAllSalesContracts()
+}
+
+class com.pluralsight.dao.contracts.SalesContractDAOMysqlImpl {
+- DataSource dataSource
++ void saveSalesContract(SalesContract)
++ List<SalesContract> findAllSalesContracts()
+}
+
+
+interface com.pluralsight.dao.vehicles.VehicleDao {
+~ List<VehicleforDummies> findAllVehicles()
+~ List<VehicleforDummies> findAllAvialableVehicles()
+~ List<VehicleforDummies> findVehiclesByDealership(int)
+~ List<VehicleforDummies> findVehiclesByPriceRange(double,double)
+~ List<VehicleforDummies> findVehiclesByMakeModel(String,String)
+~ List<VehicleforDummies> findVehiclesByYear(int,int)
+~ List<VehicleforDummies> findVehicleByColor(String)
+~ List<VehicleforDummies> findVehicleByMileRange(int,int)
+~ List<VehicleforDummies> findVehicleByVehicleType(String)
+~ VehicleforDummies findVehicleByVIN(int)
+~ void removeVehicleByVIN(int)
+~ void addVehicle(int,int,String,String,String,String,int,double)
+}
+
+interface com.pluralsight.dao.contracts.LeaseContractDao {
+~ void addLeaseContract(LeaseContract)
+~ List<LeaseContract> findAllLeaseContracts()
+}
+
+class com.pluralsight.dao.contracts.LeaseContractDAOMysqlImpl {
+- DataSource dataSource
++ void addLeaseContract(LeaseContract)
++ List<LeaseContract> findAllLeaseContracts()
+}
+
+
+class com.pluralsight.dao.vehicles.DealershipDAOMysqlImpl {
+- DataSource dataSource
++ Dealership findDealershipById(int)
++ List<Dealership> findAllDealerships()
+}
+
+
+interface com.pluralsight.dao.vehicles.DealershipDAO {
+~ Dealership findDealershipById(int)
+~ List<Dealership> findAllDealerships()
+}
+
+class com.pluralsight.dao.vehicles.VehicleDAOMysqlImpl {
+- DataSource dataSource
++ List<VehicleforDummies> findAllVehicles()
++ List<VehicleforDummies> findAllAvialableVehicles()
++ List<VehicleforDummies> findVehiclesByDealership(int)
++ List<VehicleforDummies> findVehiclesByPriceRange(double,double)
++ List<VehicleforDummies> findVehiclesByMakeModel(String,String)
++ List<VehicleforDummies> findVehiclesByYear(int,int)
++ List<VehicleforDummies> findVehicleByColor(String)
++ List<VehicleforDummies> findVehicleByMileRange(int,int)
++ List<VehicleforDummies> findVehicleByVehicleType(String)
++ VehicleforDummies findVehicleByVIN(int)
++ void removeVehicleByVIN(int)
++ void addVehicle(int,int,String,String,String,String,int,double)
+}
+
+
+
+
+com.pluralsight.dao.contracts.SalesContractDao <|.. com.pluralsight.dao.contracts.SalesContractDAOMysqlImpl
+com.pluralsight.dao.contracts.LeaseContractDao <|.. com.pluralsight.dao.contracts.LeaseContractDAOMysqlImpl
+com.pluralsight.dao.vehicles.DealershipDAO <|.. com.pluralsight.dao.vehicles.DealershipDAOMysqlImpl
+com.pluralsight.dao.vehicles.VehicleDao <|.. com.pluralsight.dao.vehicles.VehicleDAOMysqlImpl
+@enduml

@@ -73,7 +73,7 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
 
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement findAllVehicles = connection.prepareStatement("""
-                    SELECT make, model, year, color, odometer, price, vin, vehicle_type, sold, sold
+                    SELECT make, model, year, color, odometer, price, vin, vehicle_type, sold
                     FROM vehicles
                     ORDER BY price;
                     """);
@@ -112,7 +112,7 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
         boolean sold;
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("""
-                    SELECT make, model, year, color, odometer, price, vehicles.vin, vehicle_type
+                    SELECT make, model, year, color, odometer, price, vehicles.vin, vehicle_type, sold
                     FROM inventory
                     JOIN vehicles ON inventory.vin = vehicles.vin
                     WHERE dealership_id = ?;
@@ -153,7 +153,7 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
 
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("""
-                    SELECT make, model, year, color, odometer, price, vehicles.vin, vehicle_type
+                    SELECT make, model, year, color, odometer, price, vehicles.vin, vehicle_type, sold
                     FROM vehicles
                     WHERE price BETWEEN ? AND ?
                     ORDER BY price;
