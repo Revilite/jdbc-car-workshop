@@ -22,23 +22,29 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
 
     @Override
     public List<VehicleforDummies> findAllVehicles() {
+        // Create variable placeholders
         List<VehicleforDummies> vehicles = new ArrayList<>();
         String make, model, color, vehicleType;
         int year, odometer, vin;
         double price;
         boolean sold;
 
+
+        //Gets the connection from the datasource
         try (Connection connection = dataSource.getConnection()) {
+            //Prepares the SQL statement
             PreparedStatement findAllVehicles = connection.prepareStatement("""
                     SELECT make, model, year, color, odometer, price, vin, vehicle_type, sold
                     FROM vehicles
                     ORDER BY price;
                     """);
+            //Executes the query
             findAllVehicles.executeQuery();
-
+            //Recieves the results  from the query
             ResultSet rs = findAllVehicles.getResultSet();
 
             while (rs.next()) {
+                //Translates the resultset data into java data
                 make = rs.getString("make");
                 model = rs.getString("model");
                 year = rs.getInt("year");
@@ -49,16 +55,17 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
                 sold = rs.getBoolean("sold");
                 vehicleType = rs.getString("vehicle_type");
                 if (!sold) {
+                    //If the vehicle is not sold creates the vehicle and adds to a list
                     vehicles.add(new VehicleforDummies(vin, year, make, model, vehicleType, color, odometer, price));
 
                 }
             }
-
+            // returns the vehicle
             return vehicles;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
+        //Rinse and repeat for all the methods but change the sql statement each time
 
     }
 
@@ -425,7 +432,9 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
 
     @Override
     public void removeVehicleByVIN(int vin) {
+        //Get connection from datasource
         try (Connection connection = dataSource.getConnection()) {
+            //Prepare delete statement in sql, delete from vehicles and inventory
             PreparedStatement removeVehicle = connection.prepareStatement("""
                     DELETE vehicles, inventory
                     FROM inventory
@@ -433,10 +442,10 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
                     WHERE inventory.vin = ?;
                     """);
             removeVehicle.setInt(1, vin);
-
+            //executes update
             removeVehicle.executeUpdate();
 
-
+            //Result set is not required but,  you are able to get the amount of rows affected as a int
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -444,11 +453,14 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
 
     @Override
     public void addVehicle(int vin, int year, String make, String model, String vehicleType, String color, int odometer, double price) {
+        //get connection from datasource
         try (Connection connection = dataSource.getConnection()) {
+            // prepare insert statement
             PreparedStatement addVehicle = connection.prepareStatement("""
                     INSERT INTO vehicles (vin, year, make, model, vehicle_type, color, odometer, price, sold) VALUE
                     (?,?,?,?,?,?,?,?,0);
                     """);
+            //fill in all the ? to fill insert statement.
             addVehicle.setInt(1, vin);
             addVehicle.setInt(2, year);
             addVehicle.setString(3, make);
@@ -458,7 +470,10 @@ public class VehicleDAOMysqlImpl implements VehicleDao {
             addVehicle.setInt(7, odometer);
             addVehicle.setDouble(8, price);
 
+            //execute statement
             addVehicle.executeUpdate();
+
+            //ResultSet is not required but you are able to find out the rows affected represented as a int
         } catch (SQLException e) {
             System.out.println("Vehicle with the same vin already added!");
         }

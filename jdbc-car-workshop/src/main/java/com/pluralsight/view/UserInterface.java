@@ -212,7 +212,7 @@ public class UserInterface {
 
     public void processGetByYearRequest() {
         int[] userRange = getUserRange("year");
-        System.out.println(displayVehicles(vehicleDB.findVehiclesByPriceRange(userRange[0], userRange[1])));
+        System.out.println(displayVehicles(vehicleDB.findVehiclesByYear(userRange[0], userRange[1])));
     }
 
     public void processGetByColorRequest() {
